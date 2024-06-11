@@ -31,7 +31,7 @@ class eCelda(ct.Structure):
         ('nS',ct.c_ubyte), # 0 : No se pinta - # 1 : Si se pinta
         ('nF',ct.c_ubyte), # Fila de Mapa
         ('nC',ct.c_ubyte), # Columna de Mapa 
-]   
+        ]   
     
 #----------------------------------------------------
 #       Funcion Carga de Imagenes
@@ -70,18 +70,14 @@ def init_Robot():
 
 def Init_Fig():
     aImg = []
-    aImg.append(Load_Image('T01.png',False )) # Tile Tierra, id = 0
-    aImg.append(Load_Image('T02.png',False )) # Tile Roca,   id = 1
-    aImg.append(Load_Image('Bo1.png',True  )) # Robot 1      id = 2
-    aImg.append(Load_Image('Bo2.png',True  )) # Robot 2      id = 3
-    aImg.append(Load_Image('Bo3.png',True  )) # Robot 3      id = 4
-    aImg.append(Load_Image('Bo4.png',True  )) # Robot 4      id = 5
-    aImg.append(Load_Image('Bo5.png',True  )) # Robot 5      id = 6
-    aImg.append(Load_Image('Bo6.png',True  )) # Robot 6      id = 7
-    aImg.append(Load_Image('Bo7.png',True  )) # Robot 7      id = 8
-    aImg.append(Load_Image('Bo8.png',True  )) # Robot 8      id = 9
-    aImg.append(Load_Image('Rat.png',True  )) # Mouse 9      id = 10
-    aImg.append(Load_Image('Msg.png',False )) # Mensaje     id = 11
+    aImg.append(Load_Image('T01.png',  False )) # Tile Tierra, id = 0
+    aImg.append(Load_Image('Bo1.png',  True ))   # fondo 1,   id = 2
+    aImg.append(Load_Image('rb_01.png',False )) # fondo 1,   id = 3
+    aImg.append(Load_Image('rb_02.png',False )) # fondo 2,   id = 4
+    aImg.append(Load_Image('rb_03.png',False )) # fondo 3,   id = 5
+    aImg.append(Load_Image('rb_04.png',False )) # fondo 4,   id = 6
+    aImg.append(Load_Image('rb_05.png',False )) # fondo 5,   id = 7
+    aImg.append(Load_Image('Rat.png',True  ))   # Mouse 9    id = 8
     return aImg
 
 def Pinta_Mapa():
@@ -97,23 +93,12 @@ def Pinta_Mapa():
                 sWin.blit(aFig[1],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) # Mostramos la tile de acero
             else: sWin.blit(aFig[0],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Si no mostramos tile vacia 
 
-def Pinta_Robot():
-    for i in range(0,nMAX_ROBOTS): # Iteramos las 8 Figuras del Robot
-        if aBoe[i].nF == 1: sWin.blit(aFig[2] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 2: sWin.blit(aFig[3] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 3: sWin.blit(aFig[4] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 4: sWin.blit(aFig[5] ,(aBoe[i].nX,aBoe[i].nY))     
-        if aBoe[i].nF == 5: sWin.blit(aFig[6] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 6: sWin.blit(aFig[7] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 7: sWin.blit(aFig[8] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 8: sWin.blit(aFig[9] ,(aBoe[i].nX,aBoe[i].nY))
-    return
-
 #---------------------------------------------------------------------
 # Actualiza la estructura de datos de cada uno de los robots dentro del
 # Mapa sMapa.
 #---------------------------------------------------------------------
 def Mueve_Robot():
+    sWin.blit(aFig[02])# mostramos el robot
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
         aBoe[i].nR -= 1      # Decrementamos en 1 el Rango del Robot
         if aBoe[i].nR <= 0:   # Robot termino sus pasos? 
@@ -160,8 +145,9 @@ def Pinta_Mouse():
     sWin.blit(aFig[10],(nMx,nMy))
     return 
 
-sWin = init_Pygame() ; aFig = Init_Fig() 
 
+sWin = init_Pygame() ; aFig = Init_Fig() 
+fondo = aFig[ra.randint(1,5)]
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
 aBoe = [ eRobot() for i in range(0,nMAX_ROBOTS) ] ; init_Robot(); Init_Mapa() 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
@@ -179,7 +165,6 @@ while lGo:
         if e.type == pg.MOUSEMOTION : nMx,nMy = e.pos
  
     Pinta_Mapa() 
-    Pinta_Robot()
     Mueve_Robot() 
     Pinta_Mouse()
     pg.display.flip()
