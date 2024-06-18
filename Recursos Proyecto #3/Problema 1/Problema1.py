@@ -96,7 +96,7 @@ def Pinta_Robot():
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
     return
 
-def Pinta_MMapa():
+def Pinta_MiniMapa():
     xp = 0; xy = 0
     sWin.blit(aFig[5],(1013,20))
     for i in range(0,nMAX_ROBOTSnocensa):
@@ -131,9 +131,6 @@ def Pinta_Mapa():
                 sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
             if aMap[nF][nC].nT == 3:
                 sWin.blit(aFig[4],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
-
-def Mapa_Init(nAncho_X,nAlto_Y):
-    return pg.Surface((nAncho_X,nAlto_Y))
 
 def Pinta_subMapa():
     global xd,yd,nX0,nY0
@@ -206,7 +203,7 @@ while lGo:
     Pinta_Robot() 
     Mueve_Robot() 
     Pinta_Mouse()
-    Pinta_MMapa()
+    Pinta_MiniMapa()
     Pinta_subMapa()
 
     pg.display.flip()
