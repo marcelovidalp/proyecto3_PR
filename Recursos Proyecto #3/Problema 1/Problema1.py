@@ -1,11 +1,9 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
 
-#---------------------------------------------------------------------
-# Definicion de Constantes y Variables
-#---------------------------------------------------------------------
-nRes = (640,640); nt_WX = nt_HY = 32; nMAX_ROBOTS = 1; lGo = True
-nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32 
+nRes = (6400,480); nt_WX = nt_HY = 32; nMAX_ROBOTS = 100; lGo = True
+nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32
+#200 columnas y 15 filas
 #----------------------------------------------------
 #       Estructura Robots
 #----------------------------------------------------
@@ -21,7 +19,6 @@ class eRobot(ct.Structure):
         ('nV',ct.c_ushort),
         ('nC',ct.c_ushort)
 ]
-    
 #----------------------------------------------------
 #       Estructura Celda Inteligente Mapa
 #----------------------------------------------------
@@ -31,11 +28,8 @@ class eCelda(ct.Structure):
         ('nS',ct.c_ubyte), # 0 : No se pinta - # 1 : Si se pinta
         ('nF',ct.c_ubyte), # Fila de Mapa
         ('nC',ct.c_ubyte), # Columna de Mapa 
-        ]   
-    
-#----------------------------------------------------
-#       Funcion Carga de Imagenes
-#---------------------------------------------------- 
+        ]  
+     
 def Load_Image(sFile,transp = False):
     try: image = pg.image.load(sFile)
     except pg.error as message:
@@ -70,23 +64,17 @@ def init_Robot():
 
 def Init_Fig():         
     aImg = []
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\T01.png',  False )) # Tile Tierra, id = 0
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo1.png',  True ))   # fondo 1,   id = 1
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo2.png',  True ))   # fondo 1,   id = 2
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo3.png',  True ))   # fondo 1,   id = 3
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo4.png',  True ))   # fondo 1,   id = 4
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo5.png',  True ))   # fondo 1,   id = 5
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo6.png',  True ))   # fondo 1,   id = 6
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo7.png',  True ))   # fondo 1,   id = 7
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo8.png',  True ))   # fondo 1,   id = 8
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_01.png',False )) # fondo 1,   id = 9
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_02.png',False )) # fondo 2,   id = 10
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_03.png',False )) # fondo 3,   id = 11
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_04.png',False )) # fondo 4,   id = 12
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_05.png',False )) # fondo 5,   id = 13
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Rat.png',True  ))   # Mouse 9    id = 14
-
-    return aImg
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T00.png',  False )) # robot no censador id = 0
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T02.png',  True ))   # robot censador   id = 1
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T04.png',  True ))   # tile de tierra   id = 2
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T05.png',  True ))   # tile de roca   id = 3
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T06.png',  True ))   # tile de acero   id = 4
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T08.png',  True ))   # fondo mini mapa  id = 5
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T09.png',  True ))   # censador minimapa   id = 6
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T10.png',  True ))   # no censador minimapa   id = 7
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\cara.png',True  ))   # Mouse     id = 8
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\panel.png',True  ))   # panel censo recursos id = 9    
+    return aImg    
 
 def Init_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
@@ -95,35 +83,33 @@ def Init_Mapa():
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
-    return 
+    return
 
 def Pinta_Robot():
     for i in range(0,nMAX_ROBOTS): # Iteramos las 8 Figuras del Robot
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 2: sWin.blit(aFig[2] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 3: sWin.blit(aFig[3] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 4: sWin.blit(aFig[4] ,(aBoe[i].nX,aBoe[i].nY))     
-        if aBoe[i].nF == 5: sWin.blit(aFig[5] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 6: sWin.blit(aFig[6] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 7: sWin.blit(aFig[7] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 8: sWin.blit(aFig[8] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 2: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 3: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 4: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))     
+        if aBoe[i].nF == 5: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 6: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 7: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+        if aBoe[i].nF == 8: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
     return
 
 def Pinta_Mapa():
     
     for nF in range(0,nRes[1] / nt_HY):
-        for nC in range(0,nRes[0] / nt_WX): #recorremos filas y columnas
-            if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2:   #detectamos si el robot esta en una celda
-                if aMap[nF][nC].nT == 1: #si la celda es de n tipo 1
-                    aMap[nF][nC].nS = 1 #cambiamos el switch a 1 para despintar la imagen
-            if aMap[nF][nC].nS == 1: #si el switch es 1
-                fondopantalla = (nC * nt_WX, nF * nt_HY, nt_WX, nt_HY) # nColumna * 32, nFila * 32, 32, 32
-                sWin.blit(fondo,fondopantalla, fondopantalla) #aqui en verdad no se pq funciona xD2
-            else: sWin.blit(aFig[0],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #muestra el tile que cubre la imagen de fondo
-#---------------------------------------------------------------------
-# Actualiza la estructura de datos de cada uno de los robots dentro del
-# Mapa sMapa.
-#---------------------------------------------------------------------
+        for nC in range(0,nRes[0] / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
+            sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
+
+            if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2:    #Aqui preguntamos y calculamos la tile actual 
+                if aMap[nF][nC].nT == 1:
+                    aMap[nF][nC].nS = 1 # Cambiamos el valor de la baldosa para pintarla
+            if aMap[nF][nC].nS == 1: # Preguntamos si la tile es acero 
+                sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) # Mostramos la tile de acero
+            else: sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Si no mostramos tile vacia 
+
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
         aBoe[i].nR -= 1      # Decrementamos en 1 el Rango del Robot
@@ -152,7 +138,7 @@ def Mueve_Robot():
         if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:
             if newX == 607 and newY == 32:
                 aBoe[i].nR = 0
-                Reiniciar_Mapa() 
+                #Reiniciar_Mapa() 
             
             else:
                 aBoe[i].nX = newX  
@@ -166,14 +152,14 @@ def Mueve_Robot():
                 aBoe[i].nF = 1
     return
 
-def Reiniciar_Mapa():
-    global fondo #llamamos a el arreglo que contiene los fondos
-    fondo = aFig[ra.randint(9,13)] # definimos fondo    
-    init_Robot() # reiniciamois los parametros del robot
-    Init_Mapa() # reiniciamos los parametros del mapa con otro fondo del arreglo fondo
+#def Reiniciar_Mapa():
+    #global fondo #llamamos a el arreglo que contiene los fondos
+    #fondo = aFig[ra.randint(2,5)] # definimos fondo    
+    #init_Robot() # reiniciamois los parametros del robot
+    #Init_Mapa() # reiniciamos los parametros del mapa con otro fondo del arreglo fondo
 
 def Pinta_Mouse():
-    sWin.blit(aFig[14],(nMx,nMy))
+    sWin.blit(aFig[8],(nMx,nMy))
     return 
 
 def Pausa():
@@ -181,9 +167,9 @@ def Pausa():
         e = pg.event.wait()
         if e.type in (pg.QUIT, pg.KEYDOWN):
             return
-
+        
 sWin = init_Pygame() ; aFig = Init_Fig() 
-fondo = aFig[ra.randint(9,13)]
+fondo = aFig[ra.randint(2,5)]
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
 aBoe = [ eRobot() for i in range(0,nMAX_ROBOTS) ] ; init_Robot(); Init_Mapa() 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
