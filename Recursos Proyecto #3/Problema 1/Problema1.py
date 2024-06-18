@@ -1,8 +1,8 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
 
-nRes = (6400,480); nt_WX = nt_HY = 32; nMAX_ROBOTS = 100; lGo = True
-nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32
+nRes = (6400,480); nt_WX = nt_HY = 32; nMAX_ROBOTSnocensa = 90; lGo = True
+nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32; nMAX_ROBOTSsicensa = 10; tiles = []
 #200 columnas y 15 filas
 #----------------------------------------------------
 #       Estructura Robots
@@ -50,7 +50,7 @@ def init_Pygame():
 # Inicilaiza parametros de los Robots
 #---------------------------------------------------------------------
 def init_Robot():
-    for i in range(0,nMAX_ROBOTS):
+    for i in range(0,nMAX_ROBOTSsicensa):
         aBoe[i].nF = 1    # Robot Tipo 1
         aBoe[i].nX = 0    # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX 
         aBoe[i].nY = 0    # (RA.randint(0,nRES[1] - nT_HY) / nT_HY) * nT_HY
@@ -86,7 +86,7 @@ def Init_Mapa():
     return
 
 def Pinta_Robot():
-    for i in range(0,nMAX_ROBOTS): # Iteramos las 8 Figuras del Robot
+    for i in range(0,nMAX_ROBOTSsicensa): # Iteramos las 8 Figuras del Robot
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
         if aBoe[i].nF == 2: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
         if aBoe[i].nF == 3: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
@@ -102,34 +102,27 @@ def Pinta_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
             sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
-
-            if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2:    #Aqui preguntamos y calculamos la tile actual 
-                if aMap[nF][nC].nT == 1:
-                    aMap[nF][nC].nS = 1 # Cambiamos el valor de la baldosa para pintarla
-            if aMap[nF][nC].nS == 1: # Preguntamos si la tile es acero 
-                sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) # Mostramos la tile de acero
-            else: sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Si no mostramos tile vacia 
-
+            
 def Mueve_Robot():
-    for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
+    for i in range(0,nMAX_ROBOTSsicensa): # Recorrimos todos los Robots
         aBoe[i].nR -= 1      # Decrementamos en 1 el Rango del Robot
         if aBoe[i].nR <= 0:   # Robot termino sus pasos? 
             if aBoe[i].nS == 1:
                 aBoe[i].nS = 2  # Cambio de estado
-                aBoe[i].nR = nR_2 # Robot ESTE nR_2 pasos
-                aBoe[i].dX = 1 ; aBoe[i].dY = 0
+                aBoe[i].nR = nR_ # Robot ESTE nR_2 pasos
+                aBoe[i].dX = 1 ; aBoe[i].dY = ra.randint(-1,1)
             elif aBoe[i].nS == 2:
                 aBoe[i].nS = 3  # Cambio de estado
                 aBoe[i].nR = nR_1 # Robot SUBE nR_1 pasos
-                aBoe[i].dX = 0 ; aBoe[i].dY = -1
+                aBoe[i].dX = 0 ; aBoe[i].dY = ra.randint(-1,1)
             elif aBoe[i].nS == 3:
                 aBoe[i].nS = 4  # Cambio de estado
-                aBoe[i].nR = nR_2 # Robot ESTE nR_2 pasos
-                aBoe[i].dX = 1 ; aBoe[i].dY = 0
+                aBoe[i].nR = nR_1 # Robot ESTE nR_2 pasos
+                aBoe[i].dX = 1 ; aBoe[i].dY = ra.randint(-1,1)
             else:
                 aBoe[i].nS = 1  # Cambio de estado
                 aBoe[i].nR = nR_1 # Robot BAJA nR_1 pasos
-                aBoe[i].dX = 0 ; aBoe[i].dY = 1
+                aBoe[i].dX = 0 ; aBoe[i].dY = ra.randint(-1,1)
      #Actualizamos (Xs,Ys) de los Sprites en el Mapa 2D
      #--------------------------------------------------
         newX = aBoe[i].nX + aBoe[i].dX * aBoe[i].nV
@@ -138,7 +131,6 @@ def Mueve_Robot():
         if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:
             if newX == 607 and newY == 32:
                 aBoe[i].nR = 0
-                #Reiniciar_Mapa() 
             
             else:
                 aBoe[i].nX = newX  
@@ -151,12 +143,6 @@ def Mueve_Robot():
             if aBoe[i].nF == 9:
                 aBoe[i].nF = 1
     return
-
-#def Reiniciar_Mapa():
-    #global fondo #llamamos a el arreglo que contiene los fondos
-    #fondo = aFig[ra.randint(2,5)] # definimos fondo    
-    #init_Robot() # reiniciamois los parametros del robot
-    #Init_Mapa() # reiniciamos los parametros del mapa con otro fondo del arreglo fondo
 
 def Pinta_Mouse():
     sWin.blit(aFig[8],(nMx,nMy))
@@ -171,7 +157,7 @@ def Pausa():
 sWin = init_Pygame() ; aFig = Init_Fig() 
 fondo = aFig[ra.randint(2,5)]
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
-aBoe = [ eRobot() for i in range(0,nMAX_ROBOTS) ] ; init_Robot(); Init_Mapa() 
+aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSsicensa) ] ; init_Robot(); Init_Mapa() 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
 
 while lGo:
