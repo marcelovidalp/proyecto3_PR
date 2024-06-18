@@ -1,9 +1,10 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
 
-nRes = (6400,480); nt_WX = nt_HY = 32; nMAX_ROBOTSnocensa = 90; lGo = True
+nRes = (960,480); nt_WX = nt_HY = 32; nMAX_ROBOTSnocensa = 90; lGo = True
+nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480
 nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32; nMAX_ROBOTSsicensa = 10; tiles = []
-nX0 = 232 ; nY0 = 14 ; yd = 0; xd = 0
+nX0 = 20 ; nY0 = 300 ; yd = 0; xd = 0
 #200 columnas y 15 filas
 #----------------------------------------------------
 #       Estructura Robots
@@ -57,7 +58,7 @@ def init_Robot():
         aBoe[i].nY = (ra.randint(0,nRes[1] - nt_HY) / nt_HY) * nt_HY
         aBoe[i].nR = nR_1 # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX
         aBoe[i].nS = 1    # Switch por defecto
-        aBoe[i].dX = 0   # Por defecto robot Direccion Este.-
+        aBoe[i].dX = 0    # Por defecto robot Direccion Este.-
         aBoe[i].dY = 1
         aBoe[i].nV = 1 
         aBoe[i].nC = 1 
@@ -77,36 +78,36 @@ def Init_Fig():
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\panel.png',True  ))   # panel censo recursos id = 9    
     return aImg    
 
-def Init_Mapa():
+def Init_Mapa(nAncho_X,nAlto_Y):
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX):  
             aMap[nF][nC].nT = ra.randint(1,3) # inicializa el mapa con la tile sin recursos (0)
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
-    return
-
-def Mapa_Init(nAncho_X,nAlto_Y):
     return pg.Surface((nAncho_X,nAlto_Y))
 
+#def Mapa_Init(nAncho_X,nAlto_Y):
+    #return pg.Surface((nAncho_X,nAlto_Y))
+
 def Pinta_Robot():
-    for i in range(0,nMAX_ROBOTSnocensa): # Iteramos las 8 Figuras del Robot
+    for i in range(0,nMAX_ROBOTSnocensa): 
         if aBoe[i].nF == 1: sWin.blit(aFig[0] ,(aBoe[i].nX,aBoe[i].nY))
-    for i in range(0,nMAX_ROBOTSsicensa): # Iteramos las 8 Figuras del Robot
+    for i in range(0,nMAX_ROBOTSsicensa): 
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
     return
 
 def Pinta_MiniMapa():
     xp = 0; xy = 0
-    sWin.blit(aFig[5],(1013,20))
+    sWin.blit(aFig[5],(10,400))
     for i in range(0,nMAX_ROBOTSnocensa):
-        xp = int(159/float(2640)*aBoe[i].nX) + 1017 #la suma es para estar dentro
-        xy = int(112/float(1760)*aBoe[i].nY) + 27 #del borde rojo
+        xp = int(200/float(6400)*aBoe[i].nX) + 1017 #la suma es para estar dentro
+        xy = int(70/float(480)*aBoe[i].nY) + 27 #del borde rojo
         sWin.blit(aFig[7],(xp,xy))
 
     for i in range(0,nMAX_ROBOTSsicensa):
-        xp = int(159/float(2640)*aBoe[i].nX) + 1017 #la suma es para estar dentro
-        xy = int(112/float(1760)*aBoe[i].nY) + 27 #del borde rojo
+        xp = int(159/float(6400)*aBoe[i].nX) + 1017 #la suma es para estar dentro
+        xy = int(112/float(480)*aBoe[i].nY) + 27 #del borde rojo
         sWin.blit(aFig[6],(xp,xy))
     return
 
@@ -134,15 +135,14 @@ def Pinta_Mapa():
 
 def Pinta_subMapa():
     global xd,yd,nX0,nY0
-    global pico
-    sWin.blit(pico.subsurface((xd,yd,952,300)),(nX0,nY0))
+    sWin.blit(mapa.subsurface((xd,yd,20,30)),(nX0,nY0))
     return
  
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTSnocensa): # Recorrimos todos los Robots
         aBoe[i].nR -= 1    # Decrementamos en 1 el Rango del Robot
         if aBoe[i].nR < 0: # Si es negativo ->
-            aBoe[i].nR = ra.randint(0,500) # Asignamos otro Rango aleatorio
+            aBoe[i].nR = ra.randint(0,480) # Asignamos otro Rango aleatorio
             aBoe[i].nV = ra.randint(1,3)   # Asignamos otra velocidad
             nDir = ra.randint(1,5)  # Generamos una Direccion de Movimiento Aleat.
             if nDir == 1: # Norte ?
@@ -160,7 +160,7 @@ def Mueve_Robot():
         newX = aBoe[i].nX + aBoe[i].dX * aBoe[i].nV
         newY = aBoe[i].nY + aBoe[i].dY * aBoe[i].nV
 
-        if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:  
+        if 0 <= newX < nMAX_X - nt_WX and 0 <= newY < nMAX_Y - nt_HY:  
                 aBoe[i].nX = newX  
                 aBoe[i].nY = newY
     return
@@ -178,11 +178,10 @@ def Pausa():
 sWin = init_Pygame() 
 aFig = Init_Fig() 
 fondo = aFig[ra.randint(2,5)]
-aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
+aMap = [[eCelda() for nC in range(nMAX_X/nt_WX)] for nF in range(nMAX_Y/nt_HY)]
 aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSnocensa) ]
 init_Robot()
-Init_Mapa() 
-pico = Mapa_Init(6400,480)
+mapa = Init_Mapa(6400,480) 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
 
 while lGo:
