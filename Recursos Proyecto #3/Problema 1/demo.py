@@ -223,7 +223,7 @@ def Pinta_Mapa():
 # Grande
 #---------------------------------------------------------------------
 def Pinta_MMapa():
-    xp = 0; yp = 0
+    xp = 0; xy = 0
     Panta.blit(aSprt[18],(1013,20))
     for i in range(0,nMAX_ROBOTS):
      xp = int(159/float(2640)*aBoes[i].nX) + 1017 #la suma es para estar dentro

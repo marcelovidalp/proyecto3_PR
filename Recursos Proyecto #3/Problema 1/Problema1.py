@@ -3,6 +3,7 @@ from pygame.locals import *
 
 nRes = (6400,480); nt_WX = nt_HY = 32; nMAX_ROBOTSnocensa = 90; lGo = True
 nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32; nMAX_ROBOTSsicensa = 10; tiles = []
+nX0 = 232 ; nY0 = 14 ; yd = 0; xd = 0
 #200 columnas y 15 filas
 #----------------------------------------------------
 #       Estructura Robots
@@ -66,9 +67,9 @@ def Init_Fig():
     aImg = []
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T00.png',  True )) # robot no censador id = 0
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T02.png',  True ))   # robot censador   id = 1
-    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T04.png',  True ))   # tile de tierra   id = 2
-    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T05.png',  True ))   # tile de roca   id = 3
-    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T06.png',  True ))   # tile de acero   id = 4
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T04.png',  False ))   # tile de tierra   id = 2
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T05.png',  False ))   # tile de roca   id = 3
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T06.png',  False ))   # tile de acero   id = 4
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T08.png',  True ))   # fondo mini mapa  id = 5
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T09.png',  True ))   # censador minimapa   id = 6
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T10.png',  True ))   # no censador minimapa   id = 7
@@ -85,12 +86,41 @@ def Init_Mapa():
             aMap[nF][nC].nC = nC # Colu de la Celda
     return
 
+def Mapa_Init(nAncho_X,nAlto_Y):
+    return pg.Surface((nAncho_X,nAlto_Y))
+
 def Pinta_Robot():
     for i in range(0,nMAX_ROBOTSnocensa): # Iteramos las 8 Figuras del Robot
         if aBoe[i].nF == 1: sWin.blit(aFig[0] ,(aBoe[i].nX,aBoe[i].nY))
     for i in range(0,nMAX_ROBOTSsicensa): # Iteramos las 8 Figuras del Robot
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
     return
+
+def Pinta_MMapa():
+    xp = 0; xy = 0
+    sWin.blit(aFig[5],(1013,20))
+    for i in range(0,nMAX_ROBOTSnocensa):
+        xp = int(159/float(2640)*aBoe[i].nX) + 1017 #la suma es para estar dentro
+        xy = int(112/float(1760)*aBoe[i].nY) + 27 #del borde rojo
+        sWin.blit(aFig[7],(xp,xy))
+
+    for i in range(0,nMAX_ROBOTSsicensa):
+        xp = int(159/float(2640)*aBoe[i].nX) + 1017 #la suma es para estar dentro
+        xy = int(112/float(1760)*aBoe[i].nY) + 27 #del borde rojo
+        sWin.blit(aFig[6],(xp,xy))
+    return
+
+def UpDate_Scroll_Mapa(nMx,nMy):
+    xd = 0 ; yd = 0
+    if nMx in range(1018,1177):
+       if nMy in range(25,137): #si esta en el mini mapa
+          xd = int(2640*(nMx-1018)/float(159)) #deshace la interpolacion
+          yd = int(1760*(nMy-25)/float(112)) #para obtener coordenadas en mapa grande
+          pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' %(xd,yd))
+          if xd >= 1687: xd = 1687 #si nos pasamos de la coordenada en que
+          if yd >= 1090: yd = 1090 #mostrara el pedazo de mapa grande esperado
+    return xd,yd
+    
 
 def Pinta_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
@@ -101,7 +131,16 @@ def Pinta_Mapa():
                 sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
             if aMap[nF][nC].nT == 3:
                 sWin.blit(aFig[4],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
-            
+
+def Mapa_Init(nAncho_X,nAlto_Y):
+    return pg.Surface((nAncho_X,nAlto_Y))
+
+def Pinta_subMapa():
+    global xd,yd,nX0,nY0
+    global pico
+    sWin.blit(pico.subsurface((xd,yd,952,300)),(nX0,nY0))
+    return
+ 
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTSnocensa): # Recorrimos todos los Robots
         aBoe[i].nR -= 1    # Decrementamos en 1 el Rango del Robot
@@ -139,10 +178,14 @@ def Pausa():
         if e.type in (pg.QUIT, pg.KEYDOWN):
             return
         
-sWin = init_Pygame() ; aFig = Init_Fig() 
+sWin = init_Pygame() 
+aFig = Init_Fig() 
 fondo = aFig[ra.randint(2,5)]
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
-aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSnocensa) ] ; init_Robot(); Init_Mapa() 
+aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSnocensa) ]
+init_Robot()
+Init_Mapa() 
+pico = Mapa_Init(6400,480)
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
 
 while lGo:
@@ -156,10 +199,16 @@ while lGo:
     for e in ev:
         if e.type == QUIT           : lGo = (2 > 3)
         if e.type == pg.MOUSEMOTION : nMx,nMy = e.pos
+        if e.type == pg.MOUSEBUTTONDOWN and e.button == 1:
+            xd,yd = UpDate_Scroll_Mapa(nMx,nMy) # Scroll Mapa
+
     Pinta_Mapa()
     Pinta_Robot() 
     Mueve_Robot() 
     Pinta_Mouse()
+    Pinta_MMapa()
+    Pinta_subMapa()
+
     pg.display.flip()
     aClk[0].tick(10000)
 
