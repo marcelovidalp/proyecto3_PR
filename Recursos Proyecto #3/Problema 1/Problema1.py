@@ -50,10 +50,10 @@ def init_Pygame():
 # Inicilaiza parametros de los Robots
 #---------------------------------------------------------------------
 def init_Robot():
-    for i in range(0,nMAX_ROBOTSsicensa):
+    for i in range(0,nMAX_ROBOTSnocensa):
         aBoe[i].nF = 1    # Robot Tipo 1
-        aBoe[i].nX = 0    # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX 
-        aBoe[i].nY = 0    # (RA.randint(0,nRES[1] - nT_HY) / nT_HY) * nT_HY
+        aBoe[i].nX = (ra.randint(0,nRes[0] - nt_WX) / nt_WX) * nt_WX 
+        aBoe[i].nY = (ra.randint(0,nRes[1] - nt_HY) / nt_HY) * nt_HY
         aBoe[i].nR = nR_1 # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX
         aBoe[i].nS = 1    # Switch por defecto
         aBoe[i].dX = 0   # Por defecto robot Direccion Este.-
@@ -64,7 +64,7 @@ def init_Robot():
 
 def Init_Fig():         
     aImg = []
-    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T00.png',  False )) # robot no censador id = 0
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T00.png',  True )) # robot no censador id = 0
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T02.png',  True ))   # robot censador   id = 1
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T04.png',  True ))   # tile de tierra   id = 2
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T05.png',  True ))   # tile de roca   id = 3
@@ -79,69 +79,54 @@ def Init_Fig():
 def Init_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX):  
-            aMap[nF][nC].nT = 1 # inicializa el mapa con la tile sin recursos (0)
+            aMap[nF][nC].nT = ra.randint(1,3) # inicializa el mapa con la tile sin recursos (0)
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
     return
 
 def Pinta_Robot():
+    for i in range(0,nMAX_ROBOTSnocensa): # Iteramos las 8 Figuras del Robot
+        if aBoe[i].nF == 1: sWin.blit(aFig[0] ,(aBoe[i].nX,aBoe[i].nY))
     for i in range(0,nMAX_ROBOTSsicensa): # Iteramos las 8 Figuras del Robot
         if aBoe[i].nF == 1: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 2: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 3: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 4: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))     
-        if aBoe[i].nF == 5: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 6: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 7: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
-        if aBoe[i].nF == 8: sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
     return
 
 def Pinta_Mapa():
-    
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
-            sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
+            if aMap[nF][nC].nT == 1:
+                sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
+            if aMap[nF][nC].nT == 2:
+                sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
+            if aMap[nF][nC].nT == 3:
+                sWin.blit(aFig[4],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
             
 def Mueve_Robot():
-    for i in range(0,nMAX_ROBOTSsicensa): # Recorrimos todos los Robots
-        aBoe[i].nR -= 1      # Decrementamos en 1 el Rango del Robot
-        if aBoe[i].nR <= 0:   # Robot termino sus pasos? 
-            if aBoe[i].nS == 1:
-                aBoe[i].nS = 2  # Cambio de estado
-                aBoe[i].nR = nR_2 # Robot ESTE nR_2 pasos
-                aBoe[i].dX = 1 ; aBoe[i].dY = ra.randint(-1,1)
-            elif aBoe[i].nS == 2:
-                aBoe[i].nS = 3  # Cambio de estado
-                aBoe[i].nR = nR_1 # Robot SUBE nR_1 pasos
-                aBoe[i].dX = 0 ; aBoe[i].dY = ra.randint(-1,1)
-            elif aBoe[i].nS == 3:
-                aBoe[i].nS = 4  # Cambio de estado
-                aBoe[i].nR = nR_1 # Robot ESTE nR_2 pasos
-                aBoe[i].dX = 1 ; aBoe[i].dY = ra.randint(-1,1)
-            else:
-                aBoe[i].nS = 1  # Cambio de estado
-                aBoe[i].nR = nR_1 # Robot BAJA nR_1 pasos
-                aBoe[i].dX = 0 ; aBoe[i].dY = ra.randint(-1,1)
+    for i in range(0,nMAX_ROBOTSnocensa): # Recorrimos todos los Robots
+        aBoe[i].nR -= 1    # Decrementamos en 1 el Rango del Robot
+        if aBoe[i].nR < 0: # Si es negativo ->
+            aBoe[i].nR = ra.randint(0,500) # Asignamos otro Rango aleatorio
+            aBoe[i].nV = ra.randint(1,3)   # Asignamos otra velocidad
+            nDir = ra.randint(1,5)  # Generamos una Direccion de Movimiento Aleat.
+            if nDir == 1: # Norte ?
+                aBoe[i].dX = +0 ; aBoe[i].dY = -1
+            if nDir == 2: # Este ?
+                aBoe[i].dX = +1 ; aBoe[i].dY = 0
+            if nDir == 3: # Sur ?
+                aBoe[i].dX = +0 ; aBoe[i].dY = +1
+            if nDir == 4: # Oeste ?
+                aBoe[i].dX = -1 ; aBoe[i].dY = +0
+            if nDir == 5: # Detenido ?
+	            aBoe[i].dX = +0 ; aBoe[i].dY = +0
      #Actualizamos (Xs,Ys) de los Sprites en el Mapa 2D
      #--------------------------------------------------
         newX = aBoe[i].nX + aBoe[i].dX * aBoe[i].nV
         newY = aBoe[i].nY + aBoe[i].dY * aBoe[i].nV
 
-        if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:
-            if newX == 607 and newY == 32:
-                aBoe[i].nR = 0
-            
-            else:
+        if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:  
                 aBoe[i].nX = newX  
                 aBoe[i].nY = newY
-
-        aBoe[i].nC += 1
-        if aBoe[i].nC >= 20:
-            aBoe[i].nC = 1
-            aBoe[i].nF += 1
-            if aBoe[i].nF == 9:
-                aBoe[i].nF = 1
     return
 
 def Pinta_Mouse():
@@ -157,7 +142,7 @@ def Pausa():
 sWin = init_Pygame() ; aFig = Init_Fig() 
 fondo = aFig[ra.randint(2,5)]
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
-aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSsicensa) ] ; init_Robot(); Init_Mapa() 
+aBoe = [ eRobot() for i in range(0,nMAX_ROBOTSnocensa) ] ; init_Robot(); Init_Mapa() 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
 
 while lGo:
