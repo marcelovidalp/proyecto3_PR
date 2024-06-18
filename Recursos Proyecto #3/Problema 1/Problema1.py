@@ -109,7 +109,7 @@ def Mueve_Robot():
         if aBoe[i].nR <= 0:   # Robot termino sus pasos? 
             if aBoe[i].nS == 1:
                 aBoe[i].nS = 2  # Cambio de estado
-                aBoe[i].nR = nR_ # Robot ESTE nR_2 pasos
+                aBoe[i].nR = nR_2 # Robot ESTE nR_2 pasos
                 aBoe[i].dX = 1 ; aBoe[i].dY = ra.randint(-1,1)
             elif aBoe[i].nS == 2:
                 aBoe[i].nS = 3  # Cambio de estado
