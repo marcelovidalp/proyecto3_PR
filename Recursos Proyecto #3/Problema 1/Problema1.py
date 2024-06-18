@@ -1,6 +1,6 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
-
+#ola
 nRes = (960,480); nt_WX = nt_HY = 32; nMAX_ROBOTSnocensa = 90; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480
 nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32; nMAX_ROBOTSsicensa = 10; tiles = []
