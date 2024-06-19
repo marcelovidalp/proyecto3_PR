@@ -101,13 +101,13 @@ def Pinta_MiniMapa():
     xp = 0; xy = 0
     sWin.blit(aFig[5],(10,400))
     for i in range(0,nMAX_ROBOTSnocensa):
-        xp = int(200/float(6400)*aBoe[i].nX) + 1017 #la suma es para estar dentro
-        xy = int(70/float(480)*aBoe[i].nY) + 27 #del borde rojo
+        xp = int(-923/float(6400)*aBoe[i].nX) + 938 #la suma es para estar dentro
+        xy = int(65/float(480)*aBoe[i].nY) + 404 #del borde rojo
         sWin.blit(aFig[7],(xp,xy))
 
     for i in range(0,nMAX_ROBOTSsicensa):
-        xp = int(159/float(6400)*aBoe[i].nX) + 1017 #la suma es para estar dentro
-        xy = int(112/float(480)*aBoe[i].nY) + 27 #del borde rojo
+        xp = int(-923/float(6400)*aBoe[i].nX) + 938 #la suma es para estar dentro
+        xy = int(65/float(480)*aBoe[i].nY) + 404 #del borde rojo
         sWin.blit(aFig[6],(xp,xy))
     return
 
