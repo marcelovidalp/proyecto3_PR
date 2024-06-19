@@ -54,8 +54,8 @@ def init_Pygame():
 def init_Robot():
     for i in range(0,nMAX_ROBOTSnocensa):
         aBoe[i].nF = 1    # Robot Tipo 1
-        aBoe[i].nX = (ra.randint(0,nRes[0] - nt_WX) / nt_WX) * nt_WX 
-        aBoe[i].nY = (ra.randint(0,nRes[1] - nt_HY) / nt_HY) * nt_HY
+        aBoe[i].nX = (ra.randint(0,nMAX_X - nt_WX) / nt_WX) * nt_WX 
+        aBoe[i].nY = (ra.randint(0,nMAX_Y - nt_HY) / nt_HY) * nt_HY
         aBoe[i].nR = nR_1 # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX
         aBoe[i].nS = 1    # Switch por defecto
         aBoe[i].dX = 0    # Por defecto robot Direccion Este.-
@@ -71,7 +71,7 @@ def Init_Fig():
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T04.png',  False ))   # tile de tierra   id = 2
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T05.png',  False ))   # tile de roca   id = 3
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T06.png',  False ))   # tile de acero   id = 4
-    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T08.png',  True ))   # fondo mini mapa  id = 5
+    aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T08.png',  False ))   # fondo mini mapa  id = 5
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T09.png',  True ))   # censador minimapa   id = 6
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\T10.png',  True ))   # no censador minimapa   id = 7
     aImg.append(Load_Image('Recursos Proyecto #3\Problema 1\cara.png',True  ))   # Mouse     id = 8
@@ -79,8 +79,8 @@ def Init_Fig():
     return aImg    
 
 def Init_Mapa(nAncho_X,nAlto_Y):
-    for nF in range(0,nRes[1] / nt_HY):
-        for nC in range(0,nRes[0] / nt_WX):  
+    for nF in range(0,nMAX_Y / nt_HY):
+        for nC in range(0,nMAX_X / nt_WX):  
             aMap[nF][nC].nT = ra.randint(1,3) # inicializa el mapa con la tile sin recursos (0)
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
@@ -99,14 +99,14 @@ def Pinta_Robot():
 
 def Pinta_MiniMapa():
     xp = 0; xy = 0
-    sWin.blit(aFig[5],(10,400))
+    sWin.blit(aFig[5],(15,400))
     for i in range(0,nMAX_ROBOTSnocensa):
-        xp = int(-923/float(6400)*aBoe[i].nX) + 938 #la suma es para estar dentro
-        xy = int(65/float(480)*aBoe[i].nY) + 404 #del borde rojo
+        xp = int(923/float(6400)*aBoe[i].nX) + 20 #mueve los limites
+        xy = int(65/float(480)*aBoe[i].nY) + 404 #en el minimapa del robot
         sWin.blit(aFig[7],(xp,xy))
 
     for i in range(0,nMAX_ROBOTSsicensa):
-        xp = int(-923/float(6400)*aBoe[i].nX) + 938 #la suma es para estar dentro
+        xp = int(923/float(6400)*aBoe[i].nX) + 20 #la suma es para estar dentro
         xy = int(65/float(480)*aBoe[i].nY) + 404 #del borde rojo
         sWin.blit(aFig[6],(xp,xy))
     return
@@ -124,8 +124,8 @@ def UpDate_Scroll_Mapa(nMx,nMy):
     
 
 def Pinta_Mapa():
-    for nF in range(0,nRes[1] / nt_HY):
-        for nC in range(0,nRes[0] / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
+    for nF in range(0,nMAX_Y / nt_HY):
+        for nC in range(0,nMAX_X / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
             if aMap[nF][nC].nT == 1:
                 sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
             if aMap[nF][nC].nT == 2:
@@ -203,7 +203,7 @@ while lGo:
     Mueve_Robot() 
     Pinta_Mouse()
     Pinta_MiniMapa()
-    Pinta_subMapa()
+    #Pinta_subMapa()
 
     pg.display.flip()
     aClk[0].tick(10000)
