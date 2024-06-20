@@ -4,7 +4,7 @@ from pygame.locals import *
 nRes = (960,480); nt_WX = nt_HY = 32; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 100
 nMx = nMy = 0; nMAX_ROBOTSsicensa = 1; tiles = []
-nX0 = 20 ; nY0 = 300 ; yd = 0; xd = 0
+nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
 #200 columnas y 15 filas
 #----------------------------------------------------
 #       Estructura Robots
@@ -59,8 +59,8 @@ def init_Robot():
         aBoe[i].nX = (ra.randint(0,nMAX_X - nt_WX) / nt_WX) * nt_WX 
         aBoe[i].nY = (ra.randint(0,nMAX_Y - nt_HY) / nt_HY) * nt_HY
         aBoe[i].nR = 1 # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX
-        aBoe[i].nS = 1    # Switch por defecto
-        aBoe[i].dX = 0    # Por defecto robot Direccion Este.-
+        aBoe[i].nS = 1 # Switch por defecto
+        aBoe[i].dX = 0 # Por defecto robot Direccion Este.-
         aBoe[i].dY = 1
         aBoe[i].nV = 1 
         aBoe[i].nC = 1 
@@ -91,15 +91,17 @@ def Init_Mapa(nAncho_X,nAlto_Y):
             aMap[nF][nC].nC = nC # Colu de la Celda
     return pg.Surface((nAncho_X,nAlto_Y))
 
-#def Mapa_Init(nAncho_X,nAlto_Y):
-    #return pg.Surface((nAncho_X,nAlto_Y))
-
 def Pinta_Robot():
     for i in range(0,nMAX_ROBOTS): 
         if aBoe[i].nF == 1:
-            sWin.blit(aFig[0] ,(aBoe[i].nX,aBoe[i].nY))
+            sWin.blit(aFig[0] ,(aBoe[i].nX-xd,aBoe[i].nY-yd))
         if aBoe[i].nF == 2: 
-            sWin.blit(aFig[1] ,(aBoe[i].nX,aBoe[i].nY))
+            sWin.blit(aFig[1] ,(aBoe[i].nX-xd,aBoe[i].nY-yd))
+    return
+
+def Pinta_subMapa():
+    global xd,yd,nX0,nY0
+    sWin.blit(mapa.subsurface((xd,yd,924,64)),(nX0,nY0))
     return
 
 def Pinta_MiniMapa():
@@ -115,30 +117,22 @@ def Pinta_MiniMapa():
     return
 
 def UpDate_Scroll_Mapa(nMx,nMy):
-    xd = 0 ; yd = 0
-    if nMx in range(20,600):
-       if nMy in range(600,570): #si esta en el mini mapa
-          xd = int(6400*(nMx-1018)/float(159)) #deshace la interpolacion
-          yd = int(480*(nMy-25)/float(112)) #para obtener coordenadas en mapa grande
-          pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' %(xd,yd))
-          if xd >= 1687: xd = 1687 #si nos pasamos de la coordenada en que
-          if yd >= 1090: yd = 1090 #mostrara el pedazo de mapa grande esperado
+    global xd, yd
+    if 20 <= nMx <= 943 and 400 <= nMy <= 469:
+        xd = int((nMx - 20) / 923.0 * (nMAX_X - nRes[0]))
+        yd = int((nMy - 404) / 65.0 * (nMAX_Y - nRes[1]))
+        pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' % (xd, yd))
     return xd,yd
 
 def Pinta_Mapa():
-    for nF in range(0,nMAX_Y / nt_HY):
-        for nC in range(0,nMAX_X / nt_WX): #Recorre columnas y filas # pregunta si la baldosa no tiene recursos
+    for nF in range(nMAX_Y // nt_HY):
+        for nC in range(nMAX_X // nt_WX):
             if aMap[nF][nC].nT == 1:
-                sWin.blit(aFig[2],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
+                sWin.blit(aFig[2], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
             if aMap[nF][nC].nT == 2:
-                sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
+                sWin.blit(aFig[3], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
             if aMap[nF][nC].nT == 3:
-                sWin.blit(aFig[4],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
-#NO SE USAAA POR AHORA
-def Pinta_subMapa():
-    global xd,yd,nX0,nY0
-    sWin.blit(mapa.subsurface((xd,yd,20,30)),(nX0,nY0))
-    return
+                sWin.blit(aFig[4], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
  
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
@@ -197,15 +191,16 @@ while lGo:
     for e in ev:
         if e.type == QUIT           : lGo = (2 > 3)
         if e.type == pg.MOUSEMOTION : nMx,nMy = e.pos
-        if e.type == pg.MOUSEBUTTONDOWN and e.button == 1:
-            xd,yd = UpDate_Scroll_Mapa(nMx,nMy) # Scroll Mapa
+        if 20 <= nMx <= 943 and 400 <= nMy <= 469:
+            if e.type == pg.MOUSEBUTTONDOWN and e.button == 1:
+                xd,yd = UpDate_Scroll_Mapa(nMx,nMy) # Scroll Mapa
 
     Pinta_Mapa()
     Pinta_Robot() 
     Mueve_Robot() 
-    Pinta_Mouse()
+    Pinta_subMapa()
     Pinta_MiniMapa()
-    #Pinta_subMapa()
+    Pinta_Mouse()
 
     pg.display.flip()
     aClk[0].tick(10000)
