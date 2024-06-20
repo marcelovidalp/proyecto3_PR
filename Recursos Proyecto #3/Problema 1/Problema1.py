@@ -30,6 +30,8 @@ class eCelda(ct.Structure):
         ('nS',ct.c_ubyte), # 0 : No se pinta - # 1 : Si se pinta
         ('nF',ct.c_ubyte), # Fila de Mapa
         ('nC',ct.c_ubyte), # Columna de Mapa 
+        ('nR',ct.c_ubyte), # Tipo de recurso
+        ('nQ',ct.c_ubyte), # cantidad de recurso
         ]  
      
 def Load_Image(sFile,transp = False):
