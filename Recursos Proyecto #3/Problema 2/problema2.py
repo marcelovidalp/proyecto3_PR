@@ -2,7 +2,7 @@ import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
 
 #---------------------------------------------------------------------
-# Definicion de Constantes y Variables
+# Definicion de Constantes y Variabless
 #---------------------------------------------------------------------
 nRes = (640,640); nt_WX = nt_HY = 32; nMAX_ROBOTS = 1; lGo = True
 nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32 
