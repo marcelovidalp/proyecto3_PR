@@ -113,15 +113,14 @@ def Pinta_MiniMapa():
 
 def UpDate_Scroll_Mapa(nMx,nMy):
     xd = 0 ; yd = 0
-    if nMx in range(1018,1177):
-       if nMy in range(25,137): #si esta en el mini mapa
-          xd = int(2640*(nMx-1018)/float(159)) #deshace la interpolacion
-          yd = int(1760*(nMy-25)/float(112)) #para obtener coordenadas en mapa grande
+    if nMx in range(20,600):
+       if nMy in range(600,570): #si esta en el mini mapa
+          xd = int(6400*(nMx-1018)/float(159)) #deshace la interpolacion
+          yd = int(480*(nMy-25)/float(112)) #para obtener coordenadas en mapa grande
           pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' %(xd,yd))
           if xd >= 1687: xd = 1687 #si nos pasamos de la coordenada en que
           if yd >= 1090: yd = 1090 #mostrara el pedazo de mapa grande esperado
     return xd,yd
-    
 
 def Pinta_Mapa():
     for nF in range(0,nMAX_Y / nt_HY):
@@ -132,7 +131,7 @@ def Pinta_Mapa():
                 sWin.blit(aFig[3],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX))
             if aMap[nF][nC].nT == 3:
                 sWin.blit(aFig[4],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Muestra la tile 0 (sin recursos)
-
+#NO SE USAAA POR AHORA
 def Pinta_subMapa():
     global xd,yd,nX0,nY0
     sWin.blit(mapa.subsurface((xd,yd,20,30)),(nX0,nY0))
