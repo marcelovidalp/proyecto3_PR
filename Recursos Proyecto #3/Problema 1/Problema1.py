@@ -1,9 +1,9 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
-from pygame.locals import *
+from pygame.locals import * 
 #askjdfhaskdfl
 nRes = (960,480); nt_WX = nt_HY = 32; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 100
-nMx = nMy = 0; nMAX_ROBOTSsicensa = 1; tiles = []
+nMx = nMy = 0; nMAX_ROBOTSsicensa = 10
 nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
 #200 columnas y 15 filas
 #----------------------------------------------------
@@ -19,7 +19,9 @@ class eRobot(ct.Structure):
         ('dX',ct.c_ushort),
         ('dY',ct.c_ushort),
         ('nV',ct.c_ushort),
-        ('nC',ct.c_ushort)
+        ('nC',ct.c_ushort),
+        ('Recursostiles'),
+        ('Tilescensados')
 ]
 #----------------------------------------------------
 #       Estructura Celda Inteligente Mapa
@@ -64,6 +66,8 @@ def init_Robot():
         aBoe[i].dY = 1
         aBoe[i].nV = 1 
         aBoe[i].nC = 1 
+        aBoe[i].Recursostiles = []
+        aBoe[i].Tilescensados = []
     for i in range(0,nMAX_ROBOTSsicensa):
         aBoe[i].nF = 2
     return
@@ -89,6 +93,8 @@ def Init_Mapa(nAncho_X,nAlto_Y):
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
+            aMap[nF][nC].nR = ra.randint(1,5) #1 agua, 2 acero, 3 carbon, 4 petroleo, 5 aluminio
+            aMap[nF][nC].nQ = ra.randint(10,50)
     return pg.Surface((nAncho_X,nAlto_Y))
 
 def Pinta_Robot():
@@ -133,7 +139,7 @@ def Pinta_Mapa():
                 sWin.blit(aFig[3], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
             if aMap[nF][nC].nT == 3:
                 sWin.blit(aFig[4], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
- 
+
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
         aBoe[i].nR -= 1    # Decrementamos en 1 el Rango del Robot
@@ -157,8 +163,23 @@ def Mueve_Robot():
         newY = aBoe[i].nY + aBoe[i].dY * aBoe[i].nV
 
         if 0 <= newX < nMAX_X - nt_WX and 0 <= newY < nMAX_Y - nt_HY:  
-                aBoe[i].nX = newX  
-                aBoe[i].nY = newY
+            aBoe[i].nX = newX  
+            aBoe[i].nY = newY
+            if aBoe[i].nF == 2:
+                nF = aBoe[i].nY // nt_HY
+                nC = aBoe[i].nX // nt_WX
+                tile_actual = aMap[nF][nC]
+                if (nF,nC) not in aBoe[i].Tilescensados:
+                    aBoe[i].Recursostiles.append({
+                    'fila': nF,
+                    'columna': nC,
+                    'recurso': tile_actual.nR,
+                    'cantidad': tile_actual.nQ
+                    })
+                    aBoe[i].Tilescensados.append((nF, nC))
+                    #print('idrobot:'+str([i])+'recurso:'+str(tile_actual.nR)+'cantidad:'+str(tile_actual.nQ))
+                    #print(aBoe[i].Recursostiles)
+                    print(aBoe[i].Tilescensados)
     return
 
 def Pinta_Mouse():
