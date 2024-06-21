@@ -1,4 +1,4 @@
-import pygame as pg, time as ti, random as ra, ctypes as ct
+import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl
 from pygame.locals import * 
 #askjdfhaskdfl
 nRes = (960,480); nt_WX = nt_HY = 32; lGo = True
@@ -171,14 +171,12 @@ def Mueve_Robot():
                 tile_actual = aMap[nF][nC]
                 if (nF,nC) not in aBoe[i].Tilescensados:
                     aBoe[i].Recursostiles.append({
-                    'fila': nF,
-                    'columna': nC,
                     'recurso': tile_actual.nR,
                     'cantidad': tile_actual.nQ
                     })
                     aBoe[i].Tilescensados.append((nF, nC))
                     #print('idrobot:'+str([i])+'recurso:'+str(tile_actual.nR)+'cantidad:'+str(tile_actual.nQ))
-                    #print(aBoe[i].Recursostiles)
+                    print(aBoe[i].Recursostiles)
                     print(aBoe[i].Tilescensados)
     return
 
