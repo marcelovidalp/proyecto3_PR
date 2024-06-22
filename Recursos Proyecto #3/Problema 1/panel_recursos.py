@@ -1,10 +1,63 @@
-import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl
+import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl, re
 from pygame.locals import * 
 
 nRes = (837,142); nt_WX = nt_HY = 32; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 100
-nMx = nMy = 0; nMAX_ROBOTSsicensa = 10
+nMx = nMy = 0; nMAX_ROBOTSsicensa = 10; cantidadyrecurso = []
 nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
+
+class eReg(ct.Structure):
+    fields = [
+                ('nB',ct.c_ushort), # ID Robot
+                ('nF',ct.c_ushort), # Fila de Mapa
+                ('nC',ct.c_ushort), # Columna de Mapa
+                ('nR',ct.c_ushort), # Recursos 
+                ('nQ',ct.c_ushort), # Qty
+            ]
+
+# Inicializar el puerto serial
+ser = sl.Serial(port='COM3',baudrate= 9600, timeout=1)  # Usa el otro puerto que creaste
+
+def recibir_datos_serial():
+    with open('Recursos Proyecto #3\Problema 1\data.dat', 'a') as file:
+        while True:
+            if ser.in_waiting > 0:
+                data = ser.readline().decode('utf-8').strip()
+                file.write(data + '\n')
+                print(data)
+                match = re.match(r'idrobot:(\d+), recurso:(\d+), cantidad:(\d+), fila:\d+, columna:\d+', data)
+                if match:
+                    #id = int(match.group(1))
+                    recurso = int(match.group(2))
+                    cantidad = int(match.group(3))
+                    
+                    #print('recurso'+str(recurso))
+                    #print('id'+str(id))
+                    #print('cantidad'+str(cantidad))
+                    #print(cantidadyrecurso)
+                    cantidadyrecurso.append((recurso, cantidad))
+                else:
+                        print("Datos recibidos en formato incorrecto: {data}")
+
+def pinta_lineas():
+    colores = {1 : (237, 28, 36), #rojo
+    2 : (0, 162, 232), #celeste
+    3 : (34, 177, 76), #verde
+    4 : (63, 72, 204), #azul
+    5 : (255, 201, 14)} #amarillo
+    
+    for recurso, cantidad in cantidadyrecurso:
+            color = colores.get(recurso)  # Blanco por defecto si no se encuentra el recurso
+            altura = (cantidad - 10) * (50 - 10) / (50 - 10) + 10  # Escalar de 10 a 50 pixeles
+            start_pos = (100, 100)
+            end_pos = (400, 300)
+            pg.draw.line(sWin, color, start_pos, end_pos, width=5)
+    pg.display.flip()
+# Lanzar la recepcion de datos en un hilo separado
+import threading
+thread = threading.Thread(target=recibir_datos_serial)
+thread.setDaemon(True)
+thread.start()
 
 def Load_Image(sFile,transp = False):
     try: image = pg.image.load(sFile)
@@ -36,17 +89,6 @@ def Pinta_panel():
     sWin.blit(aFig[1],(0,0))
     return
 
-def Pinta_linea():
-    white = (255, 255, 255)
-    red = (255, 0, 0)
-    line_width = 1
-    start_pos = (0, 0)
-    end_pos = (500, 100)
-    pg.draw.line(sWin,red,start_pos,end_pos,line_width)
-    pg.display.flip()
-    return
-
-
 def Pausa():
     while 1:
         e = pg.event.wait()
@@ -71,7 +113,7 @@ while lGo:
 
     Pinta_panel()
     Pinta_Mouse()
-    Pinta_linea()
+    pinta_lineas()
     pg.display.flip()
     aClk[0].tick(1000)
 

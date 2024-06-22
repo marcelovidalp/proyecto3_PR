@@ -1,6 +1,6 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl
 from pygame.locals import * 
-#askjdfhaskdfl
+
 nRes = (960,480); nt_WX = nt_HY = 32; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 100
 nMx = nMy = 0; nMAX_ROBOTSsicensa = 10
@@ -9,6 +9,15 @@ nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
 #----------------------------------------------------
 #       Estructura Robots
 #----------------------------------------------------
+
+# Inicializar el puerto serial
+ser = sl.Serial(port='COM2', baudrate=9600, timeout=1)  # Usa uno de los puertos que creaste
+
+def enviar_datos_serial(robot_id, recurso, cantidad,fila,columna):
+    data = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(robot_id, recurso, cantidad,fila,columna)
+    ser.write(data.encode('utf-8'))
+
+
 class eRobot(ct.Structure):
     __fields__ = [
         ('nF',ct.c_ushort), #Figura
@@ -35,7 +44,7 @@ class eCelda(ct.Structure):
         ('nR',ct.c_ubyte), # Tipo de recurso
         ('nQ',ct.c_ubyte), # cantidad de recurso
         ]  
-     
+      
 def Load_Image(sFile,transp = False):
     try: image = pg.image.load(sFile)
     except pg.error as message:
@@ -49,7 +58,7 @@ def Load_Image(sFile,transp = False):
 def init_Pygame():
     pg.init()
     pg.mouse.set_visible(False) 
-    pg.display.set_caption('Fondo robots | Proyecto P.R #3.2')
+    pg.display.set_caption('Robots censadores | Proyecto P.R #3.1')
     return pg.display.set_mode(nRes)
 
 #---------------------------------------------------------------------
@@ -175,9 +184,10 @@ def Mueve_Robot():
                     'cantidad': tile_actual.nQ
                     })
                     aBoe[i].Tilescensados.append((nF, nC))
+                    enviar_datos_serial(i, tile_actual.nR,tile_actual.nQ,nF,nC)
                     #print('idrobot:'+str([i])+'recurso:'+str(tile_actual.nR)+'cantidad:'+str(tile_actual.nQ))
-                    print(aBoe[i].Recursostiles)
-                    print(aBoe[i].Tilescensados)
+                    #print(aBoe[i].Recursostiles)
+                    #print(aBoe[i].Tilescensados)
     return
 
 def Pinta_Mouse():
@@ -222,6 +232,6 @@ while lGo:
     Pinta_Mouse()
 
     pg.display.flip()
-    aClk[0].tick(10000)
+    aClk[0].tick(100)
 
 pg.quit
