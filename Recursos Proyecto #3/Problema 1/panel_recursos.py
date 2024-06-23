@@ -1,6 +1,6 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl, re
 from pygame.locals import * 
-
+#hgfghufghufty
 nRes = (837,142); nt_WX = nt_HY = 32; lGo = True
 nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 10
 nMx = nMy = 0; nMAX_ROBOTSsicensa = 10; cantidadyrecurso = []
