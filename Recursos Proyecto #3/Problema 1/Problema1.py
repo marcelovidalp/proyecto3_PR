@@ -127,11 +127,11 @@ def Pinta_Mapa():
     for nF in range(nMAX_Y // nt_HY): #recorre  las filas y columnas del mapa
         for nC in range(nMAX_X // nt_WX):
             if aMap[nF][nC].nT == 1: #si el tile es 1
-                sWin.blit(aFig[2], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd)) #mostramos su tile (tierra)
+                sWin.blit(aFig[2], (aMap[nF][nC].nC * nt_WX, aMap[nF][nC].nF * nt_HY)) #mostramos su tile (tierra)
             if aMap[nF][nC].nT == 2: #si el tile es 2
-                sWin.blit(aFig[3], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd)) #mostramos su tile (roca)
+                sWin.blit(aFig[3], (aMap[nF][nC].nC * nt_WX, aMap[nF][nC].nF * nt_HY)) #mostramos su tile (roca)
             if aMap[nF][nC].nT == 3: #si el tile es 3
-                sWin.blit(aFig[4], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd)) #mostramos su tile (acero)
+                sWin.blit(aFig[4], (aMap[nF][nC].nC * nt_WX, aMap[nF][nC].nF * nt_HY)) #mostramos su tile (acero)
 
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorremos todos los Robots
