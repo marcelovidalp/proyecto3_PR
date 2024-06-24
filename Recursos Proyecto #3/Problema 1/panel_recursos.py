@@ -1,11 +1,8 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct, serial as sl
 from pygame.locals import * 
 
-nRes = (837,142); nt_WX = nt_HY = 32; lGo = True
-nMIN_X = 0 ; nMAX_X = 6400 ; nMIN_Y = 0 ; nMAX_Y = 480; nMAX_ROBOTS = 10
-nMx = nMy = 0; nMAX_ROBOTSsicensa = 10; cantidadyrecurso = []
-nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
-
+nRes = (837,142); lGo = True; cantidadyrecurso = []
+nMx = nMy = 0; nMAX_ROBOTSsicensa = 10 
 class eReg(ct.Structure):
     fields = [
                 ('nB',ct.c_ushort), # ID Robot
@@ -15,31 +12,33 @@ class eReg(ct.Structure):
                 ('nQ',ct.c_ushort), # Qty
             ]
 def init_eReg():
-    for i in range(0,nMAX_ROBOTS):
-        aRegs[i].nB = i    
-        aRegs[i].nPos = (13+(83*i),130)
-        aRegs[i].nAltura = (13+(83*i),130)
-        aRegs[i].nR = 0 
-        aRegs[i].nQ = 0 
+    for i in range(0,nMAX_ROBOTSsicensa): #recorremos los robots censadores
+        aRegs[i].nB = i # iniciamos que el id sea el mismo que el numero de ciclo (el 0 sera el 0, el 1 sera el 1, y asi)
+        aRegs[i].nPos = (13+(83*i),130) # iniciamos la posicion con valores de pixeles calculados como una tupla para X e Y en el panel de las barras
+        #multiplicando por el id robot(cada ciclo) X  para desplazarlas hacia la derecha 
+        aRegs[i].nAltura = (13+(83*i),130) #iniciamos la altura con valores de pixeles calculados como una tupla para X e Y en el panel de las barras
+        # multiplicando por el id robot(cada ciclo) a X para desplazarlas hacia la derecha
+        aRegs[i].nR = 0 #iniciamos el tipo de recurso
+        aRegs[i].nQ = 0 # iniciamos la cantidad del recurso
 
-# Inicializar el puerto serial
-conn = sl.Serial(port='COM3',baudrate= 9600, timeout=1) 
+conn = sl.Serial(port='COM3',baudrate= 9600, timeout=1) # abrimos el puerto serial con sus caracteristicas
 
-def recibir_datos_serial():
+def recibir_datos_serial(): #creamos la funcion para recibir datos y que funcionara como ciclo principal
     global nMx,nMy,lGo #llamamos variables globales
-    with open('Recursos Proyecto #3\Problema 1\data.dat', 'a') as file: #abrimos el archivo data.dat
-        while lGo:
-            if conn.in_waiting > 0:
-                data = conn.read(5)
-                data = [ord(dato) for dato in data] #ciclo para recorrer la data y formatear los datos a caracteres con ord()
-                id = data[0]
-                recurso = data[1]
-                cantidad = data[2]
-                fila = data[3]
-                columna = data[4]
-                datos = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(id, recurso, cantidad,fila,columna)
-                file.write(datos + '\n')
-                init_lineas(id, recurso, cantidad)
+    with open('Recursos Proyecto #3\Problema 1\data.dat', 'a') as file: #abrimos el archivo data.dat para escribir sobre el
+        while lGo: # creamos nuestro ciclo principal
+            if conn.in_waiting > 0: # esto es basicamente otro while true, pero es mientras la conexion este abierta
+                data = conn.read(5) # leemos el arreglo de bytes con una longitud de 5 bytes
+                data = [ord(dato) for dato in data] #ciclo para recorrer la data y formatear los datos de hexadecimal a caracteres con ord()
+                id = data[0] # rescatamos el primer elemento del arreglo
+                recurso = data[1] # rescatamos el segundo elemento del arreglo
+                cantidad = data[2] # rescatamos el tercer elemento del arreglo
+                fila = data[3] # rescatamos el cuarto elemento del arreglo
+                columna = data[4] # rescatamos el quinto elemento del arreglo
+                datos = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(id, recurso, cantidad,fila,columna) # definimos datos como
+                # un linea de texto con las variables rescatad utilizando la estructura de python 2.7
+                file.write(datos + '\n') #escribimos datos sobre el archivo con un salto de linea al final
+                init_lineas(id, recurso, cantidad) #llamamos a la inicializacion de las lineas entregandole los valores necesarios
 
             cKey = pg.key.get_pressed()
             if cKey[pg.K_ESCAPE] : lGo = ('A' > 'B')
@@ -52,23 +51,25 @@ def recibir_datos_serial():
 
             Pinta_panel()
             Pinta_Mouse()
-            pinta_lineas()
+            pinta_lineas() #llamamos a la funcion para pintar las lineas
             pg.display.flip()
             aClk[0].tick(100)
 
-def init_lineas(id, recurso, cantidad):
-    colores = {1 : (237, 28, 36), #rojo
-    2 : (0, 162, 232), #celeste
-    3 : (34, 177, 76), #verde
-    4 : (63, 72, 204), #azul
-    5 : (255, 201, 14)} #amarillo
-    aRegs[id].nAltura = (13+(83*id), (130-(cantidad)))
+def init_lineas(id, recurso, cantidad): # iniciamos las lineas en base al id, recurso y cantidad
+    #creamos un diccionario con los colores a usar
+    colores = {1 : (237, 28, 36), #1 rojo   
+    2 : (0, 162, 232), #2 celeste
+    3 : (34, 177, 76), #3 verde
+    4 : (63, 72, 204), #4 azul
+    5 : (255, 201, 14)} #5 amarillo
+    aRegs[id].nAltura = (13+(83*id), (130-(cantidad))) #calculamos la altura de la linea con valores calulados de pixeles
     aRegs[id].nR = colores.get(recurso)
     aRegs[id].nQ = cantidad
     
 def pinta_lineas():
-    for i in range(0,nMAX_ROBOTS):
-        pg.draw.line(sWin, aRegs[i].nR, aRegs[i].nAltura, aRegs[i].nPos, width=10)
+    for i in range(0,nMAX_ROBOTSsicensa): #recorremos los robots 
+        pg.draw.line(sWin, aRegs[i].nR, aRegs[i].nAltura, aRegs[i].nPos, width=10) #dibujamos la linea en la pantalla principal en base a
+        # la cantidad de recurso, la altura que tendra, la posicion y con un grosor de 10 pixeles
 
 def Load_Image(sFile,transp = False):
     try: image = pg.image.load(sFile)
@@ -106,11 +107,11 @@ def Pausa():
         if e.type in (pg.QUIT, pg.KEYDOWN):
             return
 
-aRegs = [ eReg() for i in range(0,nMAX_ROBOTS) ]
+aRegs = [ eReg() for i in range(0,nMAX_ROBOTSsicensa) ]
 init_eReg()
 sWin = init_Pygame() 
 aFig = Init_Fig() 
 aClk = [pg.time.Clock(), pg.time.Clock()] 
 
-recibir_datos_serial()
+recibir_datos_serial() #llamamos a la funcion
 

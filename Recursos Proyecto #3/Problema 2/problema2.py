@@ -1,14 +1,9 @@
 import pygame as pg, time as ti, random as ra, ctypes as ct
 from pygame.locals import *
 
-#---------------------------------------------------------------------
-# Definicion de Constantes y Variabless
-#---------------------------------------------------------------------
 nRes = (640,640); nt_WX = nt_HY = 32; nMAX_ROBOTS = 1; lGo = True
 nMx = nMy = 0; nR_1 = 610 ; nR_2 = 32 
-#----------------------------------------------------
-#       Estructura Robots
-#----------------------------------------------------
+
 class eRobot(ct.Structure):
     __fields__ = [
         ('nF',ct.c_ushort), #Figura
@@ -22,9 +17,6 @@ class eRobot(ct.Structure):
         ('nC',ct.c_ushort)
 ]
     
-#----------------------------------------------------
-#       Estructura Celda Inteligente Mapa
-#----------------------------------------------------
 class eCelda(ct.Structure):
     _fields_ = [
         ('nT',ct.c_ubyte), # Tipo de Tile/Baldosa
@@ -33,9 +25,6 @@ class eCelda(ct.Structure):
         ('nC',ct.c_ubyte), # Columna de Mapa 
         ]   
     
-#----------------------------------------------------
-#       Funcion Carga de Imagenes
-#---------------------------------------------------- 
 def Load_Image(sFile,transp = False):
     try: image = pg.image.load(sFile)
     except pg.error as message:
@@ -52,9 +41,6 @@ def init_Pygame():
     pg.display.set_caption('Fondo robots | Proyecto P.R #3.2')
     return pg.display.set_mode(nRes)
 
-#---------------------------------------------------------------------
-# Inicilaiza parametros de los Robots
-#---------------------------------------------------------------------
 def init_Robot():
     for i in range(0,nMAX_ROBOTS):
         aBoe[i].nF = 1    # Robot Tipo 1
@@ -85,7 +71,6 @@ def Init_Fig():
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_04.png',False )) # fondo 4,   id = 12
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_05.png',False )) # fondo 5,   id = 13
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Rat.png',True  ))   # Mouse 9    id = 14
-
     return aImg
 
 def Init_Mapa():
@@ -110,7 +95,6 @@ def Pinta_Robot():
     return
 
 def Pinta_Mapa():
-    
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX): #recorremos filas y columnas
             if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2:   #detectamos si el robot esta en una celda
@@ -120,10 +104,7 @@ def Pinta_Mapa():
                 fondopantalla = (nC * nt_WX, nF * nt_HY, nt_WX, nt_HY) # nColumna * 32, nFila * 32, 32, 32
                 sWin.blit(fondo,fondopantalla, fondopantalla) #aqui en verdad no se pq funciona xD2
             else: sWin.blit(aFig[0],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #muestra el tile que cubre la imagen de fondo
-#---------------------------------------------------------------------
-# Actualiza la estructura de datos de cada uno de los robots dentro del
-# Mapa sMapa.
-#---------------------------------------------------------------------
+
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
         aBoe[i].nR -= 1      # Decrementamos en 1 el Rango del Robot
@@ -144,15 +125,14 @@ def Mueve_Robot():
                 aBoe[i].nS = 1  # Cambio de estado
                 aBoe[i].nR = nR_1 # Robot BAJA nR_1 pasos
                 aBoe[i].dX = 0 ; aBoe[i].dY = 1
-     #Actualizamos (Xs,Ys) de los Sprites en el Mapa 2D
-     #--------------------------------------------------
+                
         newX = aBoe[i].nX + aBoe[i].dX * aBoe[i].nV
         newY = aBoe[i].nY + aBoe[i].dY * aBoe[i].nV
 
         if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:
-            if newX == 607 and newY == 32:
-                aBoe[i].nR = 0
-                Reiniciar_Mapa() 
+            if newX == 607 and newY == 32: #si el robot llega al final
+                aBoe[i].nR = 0 #el robot termina sus pasos
+                Reiniciar_Mapa() #llamamos a la funcion para reiniciar el mapa
             
             else:
                 aBoe[i].nX = newX  
@@ -183,7 +163,7 @@ def Pausa():
             return
 
 sWin = init_Pygame() ; aFig = Init_Fig() 
-fondo = aFig[ra.randint(9,13)]
+fondo = aFig[ra.randint(9,13)] # arreglo con los 5 posibles fondos
 aMap = [[eCelda() for nC in range(nRes[0]/nt_WX)] for nF in range(nRes[1]/nt_HY)]
 aBoe = [ eRobot() for i in range(0,nMAX_ROBOTS) ] ; init_Robot(); Init_Mapa() 
 aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda() 
@@ -191,10 +171,8 @@ aClk = [pg.time.Clock(), pg.time.Clock()] ; eReg = eCelda()
 while lGo:
     cKey = pg.key.get_pressed()
     if cKey[pg.K_ESCAPE] : lGo = ('A' > 'B')
- 
     if cKey[pg.K_p]  : Pausa() 
     if cKey[pg.K_s]  : pg.image.save(sWin,'mapinte.png') 
-     
     ev = pg.event.get()
     for e in ev:
         if e.type == QUIT           : lGo = (2 > 3)
