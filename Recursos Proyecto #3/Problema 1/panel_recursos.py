@@ -32,8 +32,8 @@ def recibir_datos_serial(): #creamos la funcion para recibir datos y que funcion
                 data = [ord(dato) for dato in data] #ciclo para recorrer la data y formatear los datos de hexadecimal a caracteres con ord()
                 id = data[0] # rescatamos el primer elemento del arreglo
                 recurso = data[1] # rescatamos el segundo elemento del arreglo
-                cantidad = data[2] # rescatamos el tercer elemento del arreglo
-                fila = data[3] # rescatamos el cuarto elemento del arreglo
+                cantidad = data[2] # rescatamos el tercer elemento del arreglo    # el ord convierte un hexa a carcter 'legible'
+                fila = data[3] # rescatamos el cuarto elemento del arreglo         # este puede ser tanto STRING como INT 
                 columna = data[4] # rescatamos el quinto elemento del arreglo
                 datos = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(id, recurso, cantidad,fila,columna) # definimos datos como
                 # un linea de texto con las variables rescatad utilizando la estructura de python 2.7

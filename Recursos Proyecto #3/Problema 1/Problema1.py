@@ -56,7 +56,7 @@ def init_Robot():
         aBoe[i].nF = 1    # Robot Tipo 1 (no censa)
         aBoe[i].nX = (ra.randint(0,nMAX_X - nt_WX) / nt_WX) * nt_WX # iniciamos X en posicion aleatoria
         aBoe[i].nY = (ra.randint(0,nMAX_Y - nt_HY) / nt_HY) * nt_HY # iniciamos Y en posicion aleatoria
-        aBoe[i].nR = 1 # iniciamos con 1 paso (rango)
+        aBoe[i].nR = 0 # iniciamos con 1 paso (rango)
         aBoe[i].dX = 0 # iniciamos direccion en X en 0
         aBoe[i].dY = 0 # iniciamos direccion en Y en 0
         aBoe[i].nV = 0 # iniciamos velocidad en 0 
@@ -117,7 +117,7 @@ def Pinta_MiniMapa():
 
 def UpDate_Scroll_Mapa(nMx,nMy):
     global xd, yd #llamamos a la variables globales
-    if 20 <= nMx <= 943 and 400 <= nMy <= 469: #verifica si el mouse esta en los limites del minimapa
+    if 20 <= nMx <= 40 and 400 <= nMy <= 469: #verifica si el mouse esta en los limites del minimapa
         xd = int((nMx - 20) / 923.0 * (nMAX_X - nRes[0])) #deshace interpolacion en x
         yd = int((nMy - 404) / 65.0 * (nMAX_Y - nRes[1])) #deshace interpolacion en y
         pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' % (xd, yd)) #muestra las cordenadas en la ventana
