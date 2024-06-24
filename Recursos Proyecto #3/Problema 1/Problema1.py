@@ -11,11 +11,14 @@ nX0 = 19 ; nY0 = 405 ; yd = 0; xd = 0
 #----------------------------------------------------
 
 # Inicializar el puerto serial
-ser = sl.Serial(port='COM2', baudrate=9600, timeout=1)  # Usa uno de los puertos que creaste
+conn = sl.Serial(port='COM2', baudrate=9600, timeout=1)  # Usa uno de los puertos que creaste
 
 def enviar_datos_serial(robot_id, recurso, cantidad,fila,columna):
-    data = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(robot_id, recurso, cantidad,fila,columna)
-    ser.write(data.encode('utf-8'))
+    #data = 'idrobot:{}, recurso:{}, cantidad:{}, fila:{}, columna:{}\n'.format(robot_id, recurso, cantidad,fila,columna)
+    data = [robot_id, recurso, cantidad, fila, columna] #mandar solo  numero y escribir en panel_
+    print(data)
+    data = bytearray(data)
+    conn.write(data)
 
 
 class eRobot(ct.Structure):
