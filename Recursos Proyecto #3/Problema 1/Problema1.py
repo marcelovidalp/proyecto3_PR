@@ -27,11 +27,10 @@ class eRobot(ct.Structure):
         ('nX',ct.c_ushort), #Pos X
         ('nY',ct.c_ushort), #Pos Y
         ('nR',ct.c_ushort), #Rango
-        ('nS',ct.c_ushort), #
-        ('dX',ct.c_ushort),
-        ('dY',ct.c_ushort),
-        ('nV',ct.c_ushort),
-        ('nC',ct.c_ushort),
+        ('nS',ct.c_ushort), #Sentido
+        ('dX',ct.c_ushort), #direccion X
+        ('dY',ct.c_ushort), #direccion Y
+        ('nV',ct.c_ushort), #Velocidad
         ('Recursostiles'),
         ('Tilescensados')
 ]
@@ -75,13 +74,13 @@ def init_Robot():
         aBoe[i].nR = 1 # (RA.randint(0,nRES[0] - nT_WX) / nT_WX) * nT_WX
         aBoe[i].nS = 1 # Switch por defecto
         aBoe[i].dX = 0 # Por defecto robot Direccion Este.-
-        aBoe[i].dY = 1
+        aBoe[i].dY = 1 
         aBoe[i].nV = 1 
         aBoe[i].nC = 1 
-        aBoe[i].Recursostiles = []
-        aBoe[i].Tilescensados = []
+        aBoe[i].Recursostiles = [] 
+        aBoe[i].Tilescensados = [] 
     for i in range(0,nMAX_ROBOTSsicensa):
-        aBoe[i].nF = 2
+        aBoe[i].nF = 2 # define para los robots que censan
     return
 
 def Init_Fig():         
@@ -106,46 +105,46 @@ def Init_Mapa(nAncho_X,nAlto_Y):
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
             aMap[nF][nC].nR = ra.randint(1,5) #1 agua, 2 acero, 3 carbon, 4 petroleo, 5 aluminio
-            aMap[nF][nC].nQ = ra.randint(10,50)
-    return pg.Surface((nAncho_X,nAlto_Y))
+            aMap[nF][nC].nQ = ra.randint(10,50) #quantity recursos
+    return pg.Surface((nAncho_X,nAlto_Y)) #sobre el mapa gigante
 
 def Pinta_Robot():
-    for i in range(0,nMAX_ROBOTS): 
-        if aBoe[i].nF == 1:
-            sWin.blit(aFig[0] ,(aBoe[i].nX-xd,aBoe[i].nY-yd))
-        if aBoe[i].nF == 2: 
-            sWin.blit(aFig[1] ,(aBoe[i].nX-xd,aBoe[i].nY-yd))
+    for i in range(0,nMAX_ROBOTS): #recorre todos los robots
+        if aBoe[i].nF == 1:        #para no censadores
+            sWin.blit(aFig[0] ,(aBoe[i].nX-xd,aBoe[i].nY-yd)) #muestra
+        if aBoe[i].nF == 2:        #para censadores
+            sWin.blit(aFig[1] ,(aBoe[i].nX-xd,aBoe[i].nY-yd)) #muestra
     return
 
 def Pinta_subMapa():
     global xd,yd,nX0,nY0
-    sWin.blit(mapa.subsurface((xd,yd,924,64)),(nX0,nY0))
+    sWin.blit(mapa.subsurface((xd,yd,924,64)),(nX0,nY0)) # Superficie que se usara para el scroll
     return
 
 def Pinta_MiniMapa():
     xp = 0; xy = 0
-    sWin.blit(aFig[5],(15,400))
-    for i in range(0,nMAX_ROBOTS):
-        xp = int(923/float(6400)*aBoe[i].nX) + 20 #mueve los limites
-        xy = int(65/float(480)*aBoe[i].nY) + 404
-        if aBoe[i].nF == 1:#en el minimapa del robot
+    sWin.blit(aFig[5],(15,400))         #muestra la figura del minimapa
+    for i in range(0,nMAX_ROBOTS):      #recorre todos los robots
+        xp = int(923/float(6400)*aBoe[i].nX) + 20 #mueve los limites para x
+        xy = int(65/float(480)*aBoe[i].nY) + 404  #mueve los limites para y
+        if aBoe[i].nF == 1:#muestra el robot noC en el minimapa
             sWin.blit(aFig[7],(xp,xy))
-        if aBoe[i].nF == 2:    
+        if aBoe[i].nF == 2:#muestra el robot C en el minimapa
             sWin.blit(aFig[6],(xp,xy))
     return
 
 def UpDate_Scroll_Mapa(nMx,nMy):
     global xd, yd
-    if 20 <= nMx <= 943 and 400 <= nMy <= 469:
-        xd = int((nMx - 20) / 923.0 * (nMAX_X - nRes[0]))
-        yd = int((nMy - 404) / 65.0 * (nMAX_Y - nRes[1]))
-        pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' % (xd, yd))
-    return xd,yd
+    if 20 <= nMx <= 943 and 400 <= nMy <= 469:#verifica si el mouse esta en los limites del minimapa
+        xd = int((nMx - 20) / 923.0 * (nMAX_X - nRes[0])) #deshace interpolacion en x
+        yd = int((nMy - 404) / 65.0 * (nMAX_Y - nRes[1])) #deshace interpolacion en y
+        pg.display.set_caption('[Coord Mapa]-> X: %d - Y: %d' % (xd, yd)) #muestra las cordenadas en la ventana
+    return xd,yd #retorna la interpolacion
 
 def Pinta_Mapa():
-    for nF in range(nMAX_Y // nt_HY):
+    for nF in range(nMAX_Y // nt_HY): #recorre  las filas y columnas del mapa
         for nC in range(nMAX_X // nt_WX):
-            if aMap[nF][nC].nT == 1:
+            if aMap[nF][nC].nT == 1: 
                 sWin.blit(aFig[2], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
             if aMap[nF][nC].nT == 2:
                 sWin.blit(aFig[3], (aMap[nF][nC].nC * nt_WX - xd, aMap[nF][nC].nF * nt_HY - yd))
@@ -174,15 +173,15 @@ def Mueve_Robot():
         newX = aBoe[i].nX + aBoe[i].dX * aBoe[i].nV
         newY = aBoe[i].nY + aBoe[i].dY * aBoe[i].nV
 
-        if 0 <= newX < nMAX_X - nt_WX and 0 <= newY < nMAX_Y - nt_HY:  
-            aBoe[i].nX = newX  
+        if 0 <= newX < nMAX_X - nt_WX and 0 <= newY < nMAX_Y - nt_HY:  # si el mouse esta en los limites
+            aBoe[i].nX = newX # actualiza el lass posiciones
             aBoe[i].nY = newY
-            if aBoe[i].nF == 2:
-                nF = aBoe[i].nY // nt_HY
+            if aBoe[i].nF == 2: # si el robot censa
+                nF = aBoe[i].nY // nt_HY #obtenemos la tile censada
                 nC = aBoe[i].nX // nt_WX
                 tile_actual = aMap[nF][nC]
-                if (nF,nC) not in aBoe[i].Tilescensados:
-                    aBoe[i].Recursostiles.append({
+                if (nF,nC) not in aBoe[i].Tilescensados:# si el tile no ha sido censado
+                    aBoe[i].Recursostiles.append({      # agregamos diccionario con el recuso y la cantidad
                     'recurso': tile_actual.nR,
                     'cantidad': tile_actual.nQ
                     })
