@@ -56,15 +56,15 @@ def init_Robot():
 
 def Init_Fig():         
     aImg = []
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\T01.png',  False )) # Tile Tierra, id = 0
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo1.png',  True ))   # fondo 1,   id = 1
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo2.png',  True ))   # fondo 1,   id = 2
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo3.png',  True ))   # fondo 1,   id = 3
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo4.png',  True ))   # fondo 1,   id = 4
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo5.png',  True ))   # fondo 1,   id = 5
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo6.png',  True ))   # fondo 1,   id = 6
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo7.png',  True ))   # fondo 1,   id = 7
-    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo8.png',  True ))   # fondo 1,   id = 8
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\T01.png',  False )) # Tile acero, id = 0
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo1.png',  True ))   # figura robot 1,   id = 1
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo2.png',  True ))   # figura robot 2,   id = 2
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo3.png',  True ))   # figura robot 3,   id = 3
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo4.png',  True ))   # figura robot 4,   id = 4
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo5.png',  True ))   # figura robot 5   id = 5
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo6.png',  True ))   # figura robot 6,   id = 6
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo7.png',  True ))   # figura robot 7,   id = 7
+    aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\Bo8.png',  True ))   # figura robot 8,   id = 8
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_01.png',False )) # fondo 1,   id = 9
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_02.png',False )) # fondo 2,   id = 10
     aImg.append(Load_Image('Recursos Proyecto #3\\Problema 2\\b_03.png',False )) # fondo 3,   id = 11
@@ -76,7 +76,7 @@ def Init_Fig():
 def Init_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX):  
-            aMap[nF][nC].nT = 1 # inicializa el mapa con la tile sin recursos (0)
+            aMap[nF][nC].nT = 1 # inicializa el mapa con la tilede acero
             aMap[nF][nC].nS = 0 # la tile aparece por defecto
             aMap[nF][nC].nF = nF # Fila de la Celda
             aMap[nF][nC].nC = nC # Colu de la Celda
@@ -97,13 +97,16 @@ def Pinta_Robot():
 def Pinta_Mapa():
     for nF in range(0,nRes[1] / nt_HY):
         for nC in range(0,nRes[0] / nt_WX): #recorremos filas y columnas
-            if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2:   #detectamos si el robot esta en una celda
-                if aMap[nF][nC].nT == 1: #si la celda es de n tipo 1
-                    aMap[nF][nC].nS = 1 #cambiamos el switch a 1 para despintar la imagen
-            if aMap[nF][nC].nS == 1: #si el switch es 1
-                fondopantalla = (nC * nt_WX, nF * nt_HY, nt_WX, nt_HY) # nColumna * 32, nFila * 32, 32, 32
-                sWin.blit(fondo,fondopantalla, fondopantalla) #aqui en verdad no se pq funciona xD2
-            else: sWin.blit(aFig[0],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #muestra el tile que cubre la imagen de fondo
+            if  nC == (aBoe[0].nX+1)/nR_2 and nF == (aBoe[0].nY+1)/nR_2: #detectamos lacelda en la que esta el robot
+                if aMap[nF][nC].nT == 1: #si la celda es de tipo 1
+                    aMap[nF][nC].nS = 1 #cambiamos el switch a 1 para despintar la celda y que se vea el fondo
+            if aMap[nF][nC].nS == 1: #si cualquier tile es switch 1 (despintada)
+                fondopantalla = (nC * nt_WX, nF * nt_HY, nt_WX, nt_HY) # definimos fondopantalla que es una tupla que contiene 
+                #por orden (pos  en X, pos en Y, Ancho, Alto)
+                sWin.blit(fondo,fondopantalla, fondopantalla) #en nuestra pantalla cargamos alguna imagen de fondo del arreglo luego
+                # le entregamos los valores de X,Y,Ancho,Alto para especificar en donde se colocara la imagen para despues
+                # entregarle los mismos valores para que sepa los valores de la imagen que colocaremos
+            else: sWin.blit(aFig[0],(aMap[nF][nC].nC*nt_HY,aMap[nF][nC].nF*nt_WX)) #Pinta las tiles de acero para que el robot las vaya despintando
 
 def Mueve_Robot():
     for i in range(0,nMAX_ROBOTS): # Recorrimos todos los Robots
@@ -131,7 +134,6 @@ def Mueve_Robot():
 
         if 0 <= newX < nRes[0] - nt_WX and 0 <= newY < nRes[1] - nt_HY:
             if newX == 607 and newY == 32: #si el robot llega al final
-                aBoe[i].nR = 0 #el robot termina sus pasos
                 Reiniciar_Mapa() #llamamos a la funcion para reiniciar el mapa
             
             else:
